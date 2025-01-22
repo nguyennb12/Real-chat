@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 400px;
+            height: 80%;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-header {
+            padding: 15px;
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-message {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .chat-message.sent {
+            background-color: #e0f7fa;
+            align-self: flex-end;
+        }
+
+        .chat-message.received {
+            background-color: #f1f1f1;
+            align-self: flex-start;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            gap: 10px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ccc;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .chat-input button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Real-Time Chat</div>
+        <div class="chat-messages" id="messages"></div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type your message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script>
+        const messagesDiv = document.getElementById('messages');
+        const messageInput = document.getElementById('messageInput');
+        const websocket = new WebSocket('ws://localhost:8765');
+
+        websocket.onmessage = (event) => {
+            const message = document.createElement('div');
+            message.classList.add('chat-message', 'received');
+            message.textContent = event.data;
+            messagesDiv.appendChild(message);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the latest message
+        };
+
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                const message = document.createElement('div');
+                message.classList.add('chat-message', 'sent');
+                message.textContent = messageText;
+                messagesDiv.appendChild(message);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the latest message
+
+                websocket.send(messageText);
+                messageInput.value = '';
+            }
+        }
+    </script>
+</body>
+
+</html>

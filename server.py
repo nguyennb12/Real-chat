@@ -24,7 +24,7 @@ async def handle_client(websocket, path):
 
 async def main():
     # Start the WebSocket server
-    async with websockets.serve(handle_client, "localhost", 8765):
+    async with websockets.serve(handle_client, "0.0.0.0", 8765):
         print("WebSocket chat server is running on ws://localhost:8765")
         await asyncio.Future()  # Keep the server running indefinitely
 

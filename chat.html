@@ -114,7 +114,7 @@
     <script>
         const messagesDiv = document.getElementById('messages');
         const messageInput = document.getElementById('messageInput');
-        const websocket = new WebSocket('ws://localhost:8765');
+        const websocket = new WebSocket('ws://99.255.51.148:8765');
 
         websocket.onmessage = (event) => {
             const message = document.createElement('div');

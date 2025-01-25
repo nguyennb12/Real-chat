@@ -1,0 +1,211 @@
+< !DOCTYPE html >
+    <html lang="en">
+
+        <head>
+            <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>WebSocket Chat</title>
+                    <style>
+                        body {
+                            font - family: Arial, sans-serif;
+                        background-color: #f9f9f9;
+                        margin: 0;
+                        padding: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100vh;
+        }
+
+                        .container {
+                            width: 100%;
+                        max-width: 400px;
+                        background-color: #fff;
+                        border: 1px solid #ccc;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        overflow: hidden;
+        }
+
+                        .name-selection {
+                            padding: 20px;
+                        text-align: center;
+        }
+
+                        .name-selection input {
+                            width: 100%;
+                        padding: 10px;
+                        margin: 10px 0;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        font-size: 14px;
+        }
+
+                        .name-selection button {
+                            width: 100%;
+                        padding: 10px;
+                        border: none;
+                        background-color: #007bff;
+                        color: #fff;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        font-weight: bold;
+        }
+
+                        .name-selection button:hover {
+                            background - color: #0056b3;
+        }
+
+                        .chat-container {
+                            display: none;
+                        flex-direction: column;
+                        width: 100%;
+                        height: 80vh;
+        }
+
+                        .chat-header {
+                            padding: 15px;
+                        background-color: #007bff;
+                        color: #fff;
+                        text-align: center;
+                        font-size: 18px;
+                        font-weight: bold;
+        }
+
+                        .chat-messages {
+                            flex - grow: 1;
+                        padding: 10px;
+                        overflow-y: auto;
+                        border-bottom: 1px solid #ccc;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 10px;
+        }
+
+                        .chat-message {
+                            display: flex;
+                        align-items: center;
+                        padding: 10px;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        line-height: 1.4;
+        }
+
+                        .chat-message.sent {
+                            background - color: #e0f7fa;
+                        align-self: flex-end;
+        }
+
+                        .chat-message.received {
+                            background - color: #f1f1f1;
+                        align-self: flex-start;
+        }
+
+                        .chat-input {
+                            display: flex;
+                        padding: 15px;
+                        gap: 10px;
+                        background-color: #f9f9f9;
+                        border-top: 1px solid #ccc;
+        }
+
+                        .chat-input input {
+                            flex - grow: 1;
+                        padding: 10px;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                        font-size: 14px;
+        }
+
+                        .chat-input button {
+                            padding: 10px 15px;
+                        border: none;
+                        background-color: #007bff;
+                        color: #fff;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        font-weight: bold;
+        }
+
+                        .chat-input button:hover {
+                            background - color: #0056b3;
+        }
+                    </style>
+                </head>
+
+                <body>
+                    <div class="container">
+                        <div class="name-selection" id="nameSelection">
+                            <h2>Enter Your Name</h2>
+                            <input type="text" id="usernameInput" placeholder="Your name...">
+                                <button onclick="enterChat()">Join Chat</button>
+                        </div>
+
+                        <div class="chat-container" id="chatContainer">
+                            <div class="chat-header">Real-Time Chat</div>
+                            <div class="chat-messages" id="messages"></div>
+                            <div class="chat-input">
+                                <input type="text" id="messageInput" placeholder="Type your message...">
+                                    <button onclick="sendMessage()">Send</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        const nameSelectionDiv = document.getElementById('nameSelection');
+                        const chatContainerDiv = document.getElementById('chatContainer');
+                        const messagesDiv = document.getElementById('messages');
+                        const messageInput = document.getElementById('messageInput');
+                        const usernameInput = document.getElementById('usernameInput');
+
+                        let username = '';
+                        const websocket = new WebSocket('wss://shade-clear-ear.glitch.me');
+
+        websocket.onmessage = (event) => {
+                            let messageText;
+
+                        if (event.data instanceof Blob) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                            messageText = reader.result;
+                        displayMessage(messageText, 'received');
+                };
+                        reader.readAsText(event.data);
+            } else {
+                            messageText = event.data;
+                        displayMessage(messageText, 'received');
+            }
+        };
+
+                        function enterChat() {
+            const enteredName = usernameInput.value.trim();
+                        if (enteredName) {
+                            username = enteredName;
+                        nameSelectionDiv.style.display = 'none';
+                        chatContainerDiv.style.display = 'flex';
+            }
+        }
+
+                        function sendMessage() {
+            const messageText = messageInput.value.trim();
+                        if (messageText) {
+                const fullMessage = `${username}: ${messageText}`;
+                        displayMessage(fullMessage, 'sent');
+                        websocket.send(fullMessage);
+                        messageInput.value = '';
+            }
+        }
+
+                        function displayMessage(text, type) {
+            const message = document.createElement('div');
+                        message.classList.add('chat-message', type);
+                        message.textContent = text;
+                        messagesDiv.appendChild(message);
+                        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+                    </script>
+                </body>
+
+            </html>

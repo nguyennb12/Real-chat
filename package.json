@@ -1,0 +1,26 @@
+{
+  "name": "glitch-websocket-server",
+  "version": "0.1.0",
+  "description": "A simple WebSocket server using Express and ws, hosted on Glitch.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://glitch.com/edit/#!/glitch-websocket-server"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "websocket",
+    "glitch"
+  ]
+}

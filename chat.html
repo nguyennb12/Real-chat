@@ -17,16 +17,51 @@
             height: 100vh;
         }
 
-        .chat-container {
-            display: flex;
-            flex-direction: column;
+        .container {
             width: 100%;
             max-width: 400px;
-            height: 80%;
+            background-color: #fff;
             border: 1px solid #ccc;
             border-radius: 10px;
-            background-color: #fff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .name-selection {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .name-selection input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .name-selection button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .name-selection button:hover {
+            background-color: #0056b3;
+        }
+
+        .chat-container {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            height: 80vh;
         }
 
         .chat-header {
@@ -36,8 +71,6 @@
             text-align: center;
             font-size: 18px;
             font-weight: bold;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
         }
 
         .chat-messages {
@@ -103,23 +136,36 @@
 </head>
 
 <body>
-    <div class="chat-container">
-        <div class="chat-header">Real-Time Chat</div>
-        <div class="chat-messages" id="messages"></div>
-        <div class="chat-input">
-            <input type="text" id="messageInput" placeholder="Type your message...">
-            <button onclick="sendMessage()">Send</button>
+    <div class="container">
+        <div class="name-selection" id="nameSelection">
+            <h2>Enter Your Name</h2>
+            <input type="text" id="usernameInput" placeholder="Your name...">
+            <button onclick="enterChat()">Join Chat</button>
+        </div>
+
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">Real-Time Chat</div>
+            <div class="chat-messages" id="messages"></div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type your message...">
+                <button onclick="sendMessage()">Send</button>
+            </div>
         </div>
     </div>
+
     <script>
+        const nameSelectionDiv = document.getElementById('nameSelection');
+        const chatContainerDiv = document.getElementById('chatContainer');
         const messagesDiv = document.getElementById('messages');
         const messageInput = document.getElementById('messageInput');
+        const usernameInput = document.getElementById('usernameInput');
+
+        let username = '';
         const websocket = new WebSocket('wss://shade-clear-ear.glitch.me');
 
         websocket.onmessage = (event) => {
             let messageText;
 
-            // Handle Blob data if received
             if (event.data instanceof Blob) {
                 const reader = new FileReader();
                 reader.onload = () => {
@@ -128,17 +174,26 @@
                 };
                 reader.readAsText(event.data);
             } else {
-                // Assume the data is plain text
                 messageText = event.data;
                 displayMessage(messageText, 'received');
             }
         };
 
+        function enterChat() {
+            const enteredName = usernameInput.value.trim();
+            if (enteredName) {
+                username = enteredName;
+                nameSelectionDiv.style.display = 'none';
+                chatContainerDiv.style.display = 'flex';
+            }
+        }
+
         function sendMessage() {
             const messageText = messageInput.value.trim();
             if (messageText) {
-                displayMessage(messageText, 'sent');
-                websocket.send(messageText);
+                const fullMessage = `${username}: ${messageText}`;
+                displayMessage(fullMessage, 'sent');
+                websocket.send(fullMessage);
                 messageInput.value = '';
             }
         }
@@ -148,7 +203,7 @@
             message.classList.add('chat-message', type);
             message.textContent = text;
             messagesDiv.appendChild(message);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scroll to the latest message
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
         }
     </script>
 </body>

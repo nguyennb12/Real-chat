@@ -1,35 +1,55 @@
-import asyncio
-import websockets
+const express = require('express');
+const http = require('http');
+const WebSocket = require('ws');
 
-# Store connected clients
-connected_clients = set()
+const app = express();
 
-async def handle_client(websocket):
-    # Add the client to the connected clients set
-    connected_clients.add(websocket)
-    print(f"New client connected: {websocket.remote_address}")
+// Keep Glitch alive by responding to HTTP requests
+app.get('/', (req, res) => {
+  res.send('WebSocket server is running!');
+});
 
-    try:
-        async for message in websocket:
-            print(f"Received message: {message}")
-            # Broadcast the message to all connected clients
-            for client in connected_clients:
-                if client != websocket:  # Don't send the message back to the sender
-                    await client.send(message)
-    except websockets.ConnectionClosed:
-        print(f"Client disconnected: {websocket.remote_address}")
-    finally:
-        # Remove the client from the connected clients set
-        connected_clients.remove(websocket)
+// Create an HTTP server
+const server = http.createServer(app);
 
-async def main():
-    # Start the WebSocket server
-    async with websockets.serve(handle_client, "0.0.0.0", 8765):
-        print("WebSocket chat server is running on ws://0.0.0.0:8765")
-        await asyncio.Future()  # Keep the server running indefinitely
+// Get the port from Glitch's environment or default to 3000
+const PORT = process.env.PORT || 3000;
 
-if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("Server stopped.")
+// Start the HTTP server
+server.listen(PORT, () => {
+  console.log(`HTTP server is running on port ${PORT}`);
+});
+
+// Create a WebSocket server on the same HTTP server
+const wss = new WebSocket.Server({ server });
+
+// Set to store connected clients
+const connectedClients = new Set();
+
+// Handle new WebSocket connections
+wss.on('connection', (ws) => {
+  connectedClients.add(ws);
+  console.log('New client connected');
+
+  ws.on('message', (message) => {
+    console.log(`Received message: ${message}`);
+
+    // Broadcast the raw message to all connected clients except the sender
+    connectedClients.forEach((client) => {
+      if (client !== ws && client.readyState === WebSocket.OPEN) {
+        client.send(message); // Send the raw message as plain text
+      }
+    });
+  });
+
+  // Handle client disconnection
+  ws.on('close', () => {
+    connectedClients.delete(ws);
+    console.log('Client disconnected');
+  });
+
+  // Handle errors
+  ws.on('error', (error) => {
+    console.error('WebSocket error:', error);
+  });
+});

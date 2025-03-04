@@ -1,6 +1,15 @@
 # Real-chat
 
-## Demo 
+## Demo
+
+Try out Real-chat live:
+[Live Demo](https://nguyennb12.github.io/Real-chat/)
+
+### How to Use:
+
+1. Click the link above to open the chat application.
+2. Enter a friendly username.
+3. Start chatting with a friend or open another browser to chat with yourself!
 
 ## Description
 

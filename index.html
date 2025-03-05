@@ -161,8 +161,7 @@
         const usernameInput = document.getElementById('usernameInput');
 
         let username = '';
-        const websocket = new WebSocket('wss://shade-clear-ear.glitch.me');
-
+        const websocket = new WebSocket('ws://127.0.0.1:3000');
         websocket.onmessage = (event) => {
             let messageText;
 

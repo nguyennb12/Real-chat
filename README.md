@@ -32,7 +32,7 @@ Ensure you have the following installed:
 4. Open `index.html` in a browser to start chatting.
 
 ## Usage
-- Run the server using `node server.js`.
+- Run the server using `npm start` or `node server.js`..
 - Open the chat interface in a browser.
 - Start messaging in real-time.
 

@@ -27,9 +27,9 @@ Ensure you have the following installed:
    ```
 3. Start the server:
    ```sh
-   node server.js
+   npm start
    ```
-4. Open `chat.html` in a browser to start chatting.
+4. Open `index.html` in a browser to start chatting.
 
 ## Usage
 - Run the server using `node server.js`.

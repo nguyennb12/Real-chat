@@ -41,8 +41,6 @@ Ensure you have the following installed:
 - WebSockets
 - HTML, CSS, JavaScript
 
-### Demo
-- Join the server 
 ## Contribution
 Contributions are welcome! Please follow these steps:
 1. Fork the repository.

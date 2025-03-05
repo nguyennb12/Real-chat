@@ -169,6 +169,7 @@
                 const reader = new FileReader();
                 reader.onload = () => {
                     messageText = reader.result;
+                    // Recieve the message from the server
                     displayMessage(messageText, 'received');
                 };
                 reader.readAsText(event.data);
